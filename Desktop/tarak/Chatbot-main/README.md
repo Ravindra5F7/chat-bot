@@ -12,7 +12,7 @@
 | T. Vijay         | vijay1turaga            | Feature Suggestions, Document Analysis                                                                      |
 | G. Yaswanth      | YASWANTHGEDDA           | Notebook Handling, KG Logic, RAG Enhancements & Integration                                                 |
 | Busi Akhil       | Akhil_Busi              | LLM Interaction, Graph Data Analysis & Integration                                                          |
-| Tatina Nikhitha  | Nikhitha0206            | Frontend UI/UX, Chat Continuation using restored sessionId, Download entire chat as PDF, Chat Summarization |
+| Tatina Nikhitha  | Nikhitha0206            | Frontend UI/UX, Chat Continuation using restored sessionId, Download entire chat as PDF, Chat Summarization,web search API |
 ____________________________________________________________________________________________________________________________________________________________
 
 Welcome to FusedChatbot, a cutting-edge platform that seamlessly blends advanced AI chat capabilities with powerful document analysis tools. By combining the strengths of two distinct projects—a Python-based chatbot with sophisticated Retrieval Augmented Generation (RAG) and a Node.js/React-based application with Gemini integration—FusedChatbot delivers a robust, user-friendly experience for both conversational AI and document interaction.
