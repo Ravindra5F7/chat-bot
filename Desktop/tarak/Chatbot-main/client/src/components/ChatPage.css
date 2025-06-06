@@ -1,0 +1,507 @@
+/* client/src/components/ChatPage.css */
+
+/* === Dark Theme Variables === */
+:root {
+  --bg-main: #121212;
+  --bg-sidebar: #1e1e1e;
+  --bg-header: #1e1e1e;
+  --bg-messages: #121212;
+  --bg-input: #2a2a2a;
+  --bg-widget: #252526;
+
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --text-link: #58a6ff;
+
+  --border-color: #3a3a3a;
+  --scrollbar-thumb: #4a4a50;
+  --scrollbar-track: transparent; /* Changed for sidebar scrollbar to use sidebar bg */
+
+  --user-message-bg: #005c9d;
+  --user-message-text: #ffffff;
+  --model-message-bg: #333333;
+  --model-message-text: #e0e0e0;
+
+  --accent-blue: #007acc;
+  --accent-blue-light: #3b9cff;
+  --error-color: #f44747;
+  --error-bg: rgba(244, 71, 71, 0.1);
+  --success-color: #4caf50;
+  --success-bg: rgba(76, 175, 80, 0.1);
+
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --code-border: #3a3a3a;
+}
+
+/* === Global Styles === */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  height: 100vh;
+  overflow: hidden; /* Prevent body scroll */
+}
+
+/* === Main Layout === */
+.chat-page-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden; /* This is good, prevents page itself from scrolling */
+  background-color: var(--bg-main);
+}
+
+/* === Sidebar Area === */
+.sidebar-area {
+  width: 280px;
+  flex-shrink: 0;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Fixed height for the sidebar */
+  overflow-y: auto;  /* <<< MAKE SIDEBAR ITSELF SCROLLABLE */
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--bg-sidebar); /* Scrollbar thumb over sidebar bg */
+}
+.sidebar-area::-webkit-scrollbar {
+  width: 8px;
+}
+.sidebar-area::-webkit-scrollbar-track {
+  background: var(--bg-sidebar); /* Track matches sidebar background */
+}
+.sidebar-area::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+
+/* Widgets within Sidebar */
+.system-prompt-widget,
+.file-upload-widget,
+.llm-settings-widget,
+.file-manager-widget { /* Common styles for all widgets in the sidebar */
+  background-color: var(--bg-widget);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0; /* All widgets should not shrink and take their content height */
+  /* REMOVE flex-grow: 1; from any widget that shouldn't expand */
+  /* REMOVE overflow: hidden; from any widget if the sidebar itself is scrolling its content */
+  /* display: flex and flex-direction: column for .file-manager-widget (and others if needed for internal layout)
+     are fine if they manage *their own children's* layout, but they shouldn't prevent the sidebar from scrolling *them*.
+  */
+}
+
+/* Specific paddings if they are direct children of sidebar */
+.system-prompt-widget { padding: 15px; }
+.file-upload-widget { padding: 15px; }
+.llm-settings-widget {
+    padding: 15px;
+    /* border-bottom: 1px solid var(--border-color); /* Already handled by grouped selector */
+}
+
+.file-manager-widget {
+  /* REMOVE flex-grow: 1; */
+  /* REMOVE overflow: hidden; */
+  /* REMOVE display: flex; and flex-direction: column; IF they were intended to make *this* widget scroll.
+     If they are for its *internal* layout (e.g. to stack its own header and list), they are fine,
+     but ChatPage.css shouldn't force FileManagerWidget to fill space and hide overflow if the sidebar is scrolling.
+     The internal CSS string in FileManagerWidget.js should handle its children.
+  */
+  border-bottom: none; /* If it's the last item */
+  /* padding: 10px 15px; /* Padding is now managed by its internal CSS string, if needed */
+}
+
+
+/* === Chat Container === */
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: var(--bg-messages);
+  overflow: hidden; /* Chat container manages its own internal scrolling for messages */
+  height: 100vh; /* Or 100% of parent */
+}
+
+/* Chat Header */
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 25px;
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+.chat-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.username-display {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.header-button {
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+  background-color: #3a3a40;
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.header-button:hover:not(:disabled) {
+  background-color: #4a4a50;
+  border-color: #5a5a60;
+}
+.header-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.logout-button:hover:not(:disabled) {
+  background-color: var(--error-bg);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+
+/* Messages Area */
+.messages-area {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--bg-messages); /* Ensure track matches messages area */
+}
+.messages-area::-webkit-scrollbar { width: 8px; }
+.messages-area::-webkit-scrollbar-track { background: var(--bg-messages); }
+.messages-area::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: 4px; }
+
+/* Individual Message Styling */
+.message {
+  display: flex;
+  max-width: 80%;
+  position: relative;
+  word-wrap: break-word;
+  flex-direction: column;
+}
+.message.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.message.model {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+.message-content {
+  padding: 12px 18px;
+  border-radius: 18px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-align: left;
+}
+.message.user .message-content {
+  background-color: var(--user-message-bg);
+  color: var(--user-message-text);
+  border-bottom-right-radius: 5px;
+}
+.message.model .message-content {
+  background-color: var(--model-message-bg);
+  color: var(--model-message-text);
+  border-bottom-left-radius: 5px;
+}
+.message-content p { margin: 0 0 0.6em 0; }
+.message-content p:last-child { margin-bottom: 0; }
+.message-content strong { font-weight: 600; }
+.message-content em { font-style: italic; }
+.message-content ul, .message-content ol { padding-left: 25px; margin: 0.5em 0; }
+.message-content li { margin-bottom: 0.3em; }
+.message-content a { color: var(--text-link); text-decoration: none; }
+.message-content a:hover { text-decoration: underline; }
+.message-content pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: 6px;
+  padding: 12px 15px;
+  overflow-x: auto;
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 0.9rem;
+  margin: 1em 0;
+  white-space: pre;
+  color: var(--code-text);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--code-bg);
+}
+.message-content pre::-webkit-scrollbar { height: 6px; }
+.message-content pre::-webkit-scrollbar-track { background: var(--code-bg); }
+.message-content pre::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: 3px; }
+.message-content code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+  font-size: 0.88rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.message-content pre code {
+  background-color: transparent;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+  color: inherit;
+}
+.message-content em:has(> span.citation-ref) {
+   font-style: normal;
+   display: block;
+   margin-top: 10px;
+   font-size: 0.8rem;
+   color: var(--text-secondary);
+}
+
+.message-timestamp {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  margin-top: 6px;
+  padding: 0 5px;
+}
+
+.loading-indicator, .error-indicator {
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  margin: 5px 20px;
+}
+.error-indicator {
+  color: var(--error-color);
+  background-color: var(--error-bg);
+  border: 1px solid var(--error-color);
+  border-radius: 4px;
+  font-style: normal;
+}
+.message-error {
+  color: var(--error-color);
+  font-style: italic;
+  text-align: center;
+  padding: 5px;
+  font-size: 0.8rem;
+}
+
+.input-area {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--bg-header);
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.input-area textarea {
+  flex-grow: 1;
+  padding: 10px 18px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  resize: none;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  max-height: 120px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  font-family: inherit;
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+.input-area textarea::-webkit-scrollbar { width: 6px; }
+.input-area textarea::-webkit-scrollbar-track { background: var(--scrollbar-track); }
+.input-area textarea::-webkit-scrollbar-thumb { background-color: var(--scrollbar-thumb); border-radius: 3px; }
+.input-area textarea::placeholder { color: var(--text-secondary); opacity: 0.7; }
+.input-area textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background-color: var(--bg-input);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.3);
+}
+.input-area textarea:disabled {
+  background-color: #2a2a30;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.rag-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 5px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+.rag-toggle-container:has(input:not(:disabled)):hover {
+   background-color: rgba(255, 255, 255, 0.05);
+}
+.rag-toggle-container input[type="checkbox"] {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-blue);
+  margin: 0;
+  vertical-align: middle;
+}
+.rag-toggle-container label {
+  font-size: 0.85rem;
+  cursor: pointer;
+  line-height: 1;
+}
+.rag-toggle-container input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+.rag-toggle-container input[type="checkbox"]:disabled + label {
+  cursor: not-allowed;
+  opacity: 0.6;
+  color: #666;
+}
+
+.input-area button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+.input-area button:hover:not(:disabled) {
+  background-color: var(--accent-blue-light);
+}
+.input-area button:disabled {
+  background-color: #3a3a40;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.input-area button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) {
+    .sidebar-area { display: none; }
+    .chat-container { border-left: none; }
+}
+@media (max-width: 600px) {
+     .chat-header { padding: 10px 15px; }
+     .chat-header h1 { font-size: 1.1rem; }
+     .header-controls { gap: 8px; }
+     .header-button { padding: 5px 10px; font-size: 0.8rem; }
+     .username-display { display: none; }
+
+     .messages-area { padding: 15px; gap: 15px; }
+     .message { max-width: 90%; }
+     .message-content { padding: 10px 15px; font-size: 0.9rem; }
+
+     .input-area { padding: 10px 12px; gap: 8px; }
+     .input-area textarea { font-size: 0.9rem; padding: 8px 15px; }
+
+     .rag-toggle-container { padding: 4px 6px; gap: 4px;}
+     .rag-toggle-container label { font-size: 0.8rem; }
+     .rag-toggle-container input[type="checkbox"] { width: 14px; height: 14px; }
+
+     .input-area button { width: 36px; height: 36px; padding: 6px; }
+     .input-area button svg { width: 18px; height: 18px; }
+}
+
+/* Styles for .llm-settings-widget, .setting-item, .message-thinking-trace */
+.llm-settings-widget h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 5px;
+}
+
+.setting-item {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    font-size: 0.85em;
+    color: var(--text-primary);
+}
+.setting-item label {
+    margin-right: 8px;
+    min-width: 70px;
+}
+.setting-item select,
+.setting-item input[type="checkbox"] {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    flex-grow: 1;
+}
+.setting-item input[type="checkbox"] {
+    flex-grow: 0;
+    margin-right: 5px;
+    accent-color: var(--accent-blue);
+}
+
+.message-thinking-trace {
+    font-size: 0.8em;
+    color: var(--text-secondary);
+    margin-top: 8px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 5px;
+}
+.message-thinking-trace summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: var(--text-secondary);
+}
+.message-thinking-trace pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 5px;
+    padding: 5px;
+    background-color: var(--bg-main);
+    border-radius: 3px;
+    color: var(--text-primary);
+}

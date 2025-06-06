@@ -1,0 +1,138 @@
+/* client/src/components/AnalysisResultModal.css */
+.analysis-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000; /* Ensure it's on top */
+}
+
+.analysis-modal-content {
+    background-color: var(--bg-secondary, #2c2c34); /* Use your theme's secondary bg */
+    color: var(--text-primary, #e0e0e0);
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 700px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.analysis-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color, #444);
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.analysis-modal-header h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.analysis-modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    cursor: pointer;
+    color: var(--text-secondary, #aaa);
+    padding: 0;
+    line-height: 1;
+}
+.analysis-modal-close-btn:hover {
+    color: var(--text-primary, #fff);
+}
+
+.analysis-modal-body {
+    overflow-y: auto; /* Make body scrollable if content is long */
+    flex-grow: 1;
+    margin-bottom: 15px;
+}
+
+.analysis-modal-body h4 {
+    margin-top: 15px;
+    margin-bottom: 8px;
+    font-size: 1em;
+    border-bottom: 1px dashed var(--border-color, #444);
+    padding-bottom: 5px;
+}
+.analysis-modal-body h4:first-child {
+    margin-top: 0;
+}
+
+
+.analysis-thinking-details {
+    background-color: var(--bg-input, #25252c);
+    border: 1px solid var(--border-color, #444);
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.analysis-thinking-details summary {
+    padding: 8px 12px;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+}
+
+.analysis-thinking-details pre.analysis-thinking-text {
+    padding: 10px 12px;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 0.9em;
+    background-color: var(--bg-primary, #1e1e24); /* Slightly different background */
+    border-top: 1px solid var(--border-color, #444);
+    max-height: 200px; /* Limit height of thinking block */
+    overflow-y: auto;
+}
+
+.analysis-result-text {
+    background-color: var(--bg-primary-alt, #282830); /* Slightly different from main modal bg */
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border-color-light, #383840);
+}
+
+/* Style for ReactMarkdown output if needed (lists, headings, etc.) */
+.analysis-result-text ul, .analysis-result-text ol {
+    padding-left: 20px;
+}
+.analysis-result-text li {
+    margin-bottom: 5px;
+}
+ .analysis-result-text pre { /* For code blocks if any in mindmap or other results */
+    background-color: var(--bg-input);
+    padding: 8px;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+
+.analysis-modal-footer {
+    border-top: 1px solid var(--border-color, #444);
+    padding-top: 15px;
+    text-align: right;
+}
+
+.analysis-modal-footer button {
+    padding: 8px 15px;
+    background-color: var(--accent-blue, #007bff);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.analysis-modal-footer button:hover {
+    background-color: var(--accent-blue-dark, #0056b3);
+}
