@@ -1,6 +1,20 @@
 🤖 FusedChatbot: AI-Powered Chat & Document Analysis Platform.
     Video Link : https://youtu.be/FDIkk8mVnu0
 
+
+## Team Contributions
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+| Name             | GitHub Username         | Contributions                                                                                               |
+|------------------|-------------------------|-------------------------------------------------------------------------------------------------------------|
+| Maroju Eswari    | EswariMaroju            | Load Balancing, Voice-to-Text, Response Voice, Multi-user Handling, Code Compiler                           |
+| J. Vijay Tarak   | JANGUMALLIVIJAYTARAK    | LLM Selection, Chain-of-Thought (CoT), Model Analysis & Integration                                         |
+| S. Raveendra     | Ravindra5F7             | UI Design, Database Handling & Integration                                                                  |
+| T. Vijay         | vijay1turaga            | Feature Suggestions, Document Analysis                                                                      |
+| G. Yaswanth      | YASWANTHGEDDA           | Notebook Handling, KG Logic, RAG Enhancements & Integration                                                 |
+| Busi Akhil       | Akhil_Busi              | LLM Interaction, Graph Data Analysis & Integration                                                          |
+| Tatina Nikhitha  | Nikhitha0206            | Frontend UI/UX, Chat Continuation using restored sessionId, Download entire chat as PDF, Chat Summarization |
+____________________________________________________________________________________________________________________________________________________________
+
 Welcome to FusedChatbot, a cutting-edge platform that seamlessly blends advanced AI chat capabilities with powerful document analysis tools. By combining the strengths of two distinct projects—a Python-based chatbot with sophisticated Retrieval Augmented Generation (RAG) and a Node.js/React-based application with Gemini integration—FusedChatbot delivers a robust, user-friendly experience for both conversational AI and document interaction.
 ___________________________________________________________________________________________________________________________________________________________________
 🌟 Key Features
