@@ -1,4 +1,5 @@
-🤖 FusedChatbot: AI-Powered Chat & Document Analysis Platform
+🤖 FusedChatbot: AI-Powered Chat & Document Analysis Platform.
+    Video Link : https://youtu.be/FDIkk8mVnu0
 
 Welcome to FusedChatbot, a cutting-edge platform that seamlessly blends advanced AI chat capabilities with powerful document analysis tools. By combining the strengths of two distinct projects—a Python-based chatbot with sophisticated Retrieval Augmented Generation (RAG) and a Node.js/React-based application with Gemini integration—FusedChatbot delivers a robust, user-friendly experience for both conversational AI and document interaction.
 ___________________________________________________________________________________________________________________________________________________________________
