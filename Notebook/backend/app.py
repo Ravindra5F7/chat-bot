@@ -793,8 +793,8 @@ if __name__ == '__main__':
     
     logger.info(f"--- Starting Waitress WSGI Server for Flask app '{app.name}' ---")
     logger.info(f"Serving on http://{host}:{port}")
-    logger.info(f"Ollama Base URL: {getattr(config, 'OLLAMA_BASE_URL', 'N/A')}")
-    logger.info(f"LLM Model: {getattr(config, 'OLLAMA_MODEL', 'N/A')}, Embedding Model: {getattr(config, 'OLLAMA_EMBED_MODEL', 'N/A')}")
+    logger.info(f"Ollama Base URL: {getattr(config, 'OLLAMA_BASE_URL', 'http://172.180.9.187:11435/')}")
+    logger.info(f"LLM Model: {getattr(config, 'OLLAMA_MODEL', 'deepseek-r1:14b')}, Embedding Model: {getattr(config, 'OLLAMA_EMBED_MODEL', 'mxbai-embed-large')}")
     
     db_status = 'Ready' if app_db_ready else 'Failed'
     ai_status = 'Ready' if app_ai_ready else 'Failed/Degraded'

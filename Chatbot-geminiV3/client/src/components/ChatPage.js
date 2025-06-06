@@ -18,6 +18,7 @@ import FAQAnalysis from './FAQAnalysis';
 import TopicAnalysis from './TopicAnalysis';
 import MindmapAnalysis from './MindmapAnalysis';
 import KnowledgeGraphViewer from './KnowledgeGraphViewer';
+import CloseIcon from '@mui/icons-material/Close';
 
 import './ChatPage.css';
 import { 

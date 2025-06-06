@@ -137,7 +137,6 @@
 // // Export the configured Axios instance if needed for direct use elsewhere
 // export default api;
 
-
 // client/src/services/api.js
 import axios from 'axios';
 
@@ -151,10 +150,10 @@ const getApiBaseUrl = () => {
 };
 
 const API_BASE_URL = getApiBaseUrl();
-console.log("[api.js] API Base URL determined as:", API_BASE_URL);
+console.log("[api.js] API Base URL determined as:", API_BASE_URL); // Existing log
 
 // Create Axios instance
-const apiClient = axios.create({
+const apiClient = axios.create({ // Renamed 'api' to 'apiClient' for clarity if 'api' is default export
     baseURL: API_BASE_URL,
 });
 
@@ -162,26 +161,26 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
-        const userId = localStorage.getItem('userId'); // Still used by some of your backend logic
+        const userId = localStorage.getItem('userId');
 
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
-        } else if (!config.url.includes('/auth/')) {
+        } else if (!config.url.includes('/auth/')) { // Don't warn for auth endpoints
             console.warn("[api.js Interceptor] No token found for non-auth request to:", config.url);
         }
 
         if (userId) {
-            config.headers['x-user-id'] = userId;
-        } else if (!config.url.includes('/auth/')) {
+            config.headers['x-user-id'] = userId; // Continue sending if present
+        } else if (!config.url.includes('/auth/')) { // Don't warn for auth endpoints
             console.warn("[api.js Interceptor] No userId found for non-auth request to:", config.url);
         }
         
         if (config.data instanceof FormData) {
-            delete config.headers['Content-Type']; // Let Axios set it for FormData
+            delete config.headers['Content-Type']; // Axios handles FormData Content-Type
         } else if (!config.headers['Content-Type']) {
-            config.headers['Content-Type'] = 'application/json';
+            config.headers['Content-Type'] = 'application/json'; // Default for others
         }
-        // console.log("[api.js Interceptor] Outgoing request config:", config);
+        // console.log("[api.js Interceptor] Outgoing request config:", config); // Uncomment for deep debug
         return config;
     },
     (error) => {
@@ -192,23 +191,24 @@ apiClient.interceptors.request.use(
 
 // Response Interceptor: Handle 401 Unauthorized
 apiClient.interceptors.response.use(
-    (response) => response,
+    (response) => response, // Pass through successful responses
     (error) => {
         if (error.response && error.response.status === 401) {
-            console.warn("[api.js Interceptor] Received 401 Unauthorized. Clearing auth and redirecting.");
-            localStorage.removeItem('token'); // Clear token first
+            console.warn("[api.js Interceptor] Received 401 Unauthorized. Clearing auth data and redirecting to login.");
+            localStorage.removeItem('token'); // Clear token first on 401
             localStorage.removeItem('sessionId');
             localStorage.removeItem('username');
             localStorage.removeItem('userId');
-            if (!window.location.pathname.includes('/login')) {
+            // Ensure we are not already on /login to prevent redirect loops
+            if (window.location.pathname !== '/login' && !window.location.pathname.startsWith('/login/')) {
                 window.location.href = '/login?sessionExpired=true';
             }
         }
-        return Promise.reject(error);
+        return Promise.reject(error); // Important to reject so calling code can handle
     }
 );
 
-// --- API Functions ---
+// --- API Functions (Named Exports) ---
 
 // Authentication
 export const signupUser = (userData) => apiClient.post('/auth/signup', userData);
@@ -216,12 +216,13 @@ export const signinUser = (userData) => apiClient.post('/auth/signin', userData)
 
 // Chat Interaction
 export const sendMessage = (messageData) => {
-    console.log("[api.js] sendMessage called with data:", messageData); // LOGGING
+    // >>> ADDED/VERIFIED LOGGING <<<
+    console.log("[api.js] sendMessage - payload to Node.js /chat/message:", messageData);
     return apiClient.post('/chat/message', messageData);
 };
 export const saveChatHistory = (historyData) => apiClient.post('/chat/history', historyData);
 
-// RAG Query (to Node.js backend, which might proxy to Python RAG service)
+// RAG Query (Node.js proxies to Python RAG service if needed)
 export const queryRagService = (queryData) => apiClient.post('/chat/rag', queryData);
 
 // Chat History Retrieval
@@ -230,12 +231,13 @@ export const getSessionDetails = (sessionId) => apiClient.get(`/chat/session/${s
 
 // Document Analysis
 export const getAnalysis = (filename, analysisType, llm_preference) => {
-    console.log(`[api.js] getAnalysis: file=${filename}, type=${analysisType}, llm_pref=${llm_preference}`); // LOGGING
+    // >>> ADDED/VERIFIED LOGGING <<<
+    console.log(`[api.js] getAnalysis - payload to Node.js /analyze: file=${filename}, type=${analysisType}, llm_pref=${llm_preference}`);
     // Ensure your Node.js /api/analyze endpoint can receive and use llm_preference
-    return apiClient.post('/analyze', { // Ensure Node.js has an /api/analyze route
-        filename,
-        analysis_type: analysisType,
-        llm_preference: llm_preference
+    return apiClient.post('/analyze', { 
+        filename, 
+        analysis_type: analysisType, 
+        llm_preference: llm_preference // Pass llm_preference here
     });
 };
 
@@ -243,17 +245,21 @@ export const getAnalysis = (filename, analysisType, llm_preference) => {
 export const getKgDataForVisualization = (filename) => {
     console.log(`[api.js] getKgDataForVisualization for file: ${filename}`);
     // This expects a Node.js route like /api/kg/data/:filename that in turn calls Python app.py's /get_kg_data
+    // Ensure you have this Node.js route: e.g., app.use('/api/kg', kgRoutes);
     return apiClient.get(`/kg/data/${encodeURIComponent(filename)}`);
 };
 
-// File Upload (Node.js /api/upload)
-export const uploadFile = (formData) => apiClient.post('/upload', formData); // Ensure Node.js has /api/upload
+// File Upload
+export const uploadFile = (formData) => apiClient.post('/upload', formData); // Node.js /api/upload
 
-// File Management (Node.js /api/files)
-export const getUserFiles = () => apiClient.get('/files'); // Ensure Node.js has /api/files
-export const renameUserFile = (serverFilename, newOriginalName) =>
-    apiClient.patch(`/files/${encodeURIComponent(serverFilename)}`, { newOriginalName });
-export const deleteUserFile = (serverFilename) =>
-    apiClient.delete(`/files/${encodeURIComponent(serverFilename)}`);
+// File Management
+export const getUserFiles = () => apiClient.get('/files'); // Node.js /api/files
+export const renameUserFile = (serverFilename, newOriginalName) => 
+    apiClient.patch(`/files/${encodeURIComponent(serverFilename)}`, { newOriginalName }); // Node.js /api/files/:filename
+export const deleteUserFile = (serverFilename) => 
+    apiClient.delete(`/files/${encodeURIComponent(serverFilename)}`); // Node.js /api/files/:filename
 
-export default apiClient; // Export the configured Axios instance
+
+// --- Default Export ---
+// Export the configured Axios instance for direct use or if preferred by some project patterns.
+export default apiClient;
